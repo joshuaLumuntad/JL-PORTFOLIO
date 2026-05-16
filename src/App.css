@@ -50,31 +50,22 @@ body {
   line-height: 1.6;
 }
 
-/* ---------- Custom Scrollbar (Webkit) ---------- */
+/* ---------- Custom Scrollbar ---------- */
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
-
 ::-webkit-scrollbar-track {
   background: var(--scrollbar-track);
   border-radius: 10px;
 }
-
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
   border-radius: 10px;
   transition: background 0.2s;
 }
-
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
-}
-
-/* Firefox scrollbar */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
 }
 
 .app {
@@ -84,7 +75,6 @@ body {
   transition: var(--transition);
 }
 
-/* Particles Background */
 #tsparticles {
   position: fixed;
   top: 0;
@@ -95,7 +85,6 @@ body {
   pointer-events: none;
 }
 
-/* Main Container */
 .container {
   position: relative;
   z-index: 1;
@@ -104,7 +93,7 @@ body {
   padding: 2rem 1.5rem;
 }
 
-/* Theme Toggle Button */
+/* ---------- Theme Toggle ---------- */
 .theme-toggle {
   position: fixed;
   top: 1.5rem;
@@ -122,18 +111,91 @@ body {
   transition: var(--transition);
   box-shadow: var(--card-shadow);
 }
-
 .theme-toggle:hover {
   transform: scale(1.05);
 }
 
-/* Hero Section */
+/* ---------- Nav Dots ---------- */
+.nav-dots {
+  position: fixed;
+  left: 1.2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nav-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: transparent;
+  cursor: pointer;
+  transition: var(--transition);
+  padding: 0;
+  position: relative;
+}
+
+.nav-dot::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+}
+
+.nav-dot:hover,
+.nav-dot.active {
+  background: var(--accent);
+  transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+  .nav-dots { display: none; }
+}
+
+/* ---------- Scroll to Top ---------- */
+.scroll-top {
+  position: fixed;
+  bottom: 2rem;
+  right: 1.5rem;
+  z-index: 100;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+.scroll-top:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* ---------- Section Fade-In Animation ---------- */
+.fade-section {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.fade-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- Hero ---------- */
 .hero {
   text-align: center;
   padding: 3rem 1rem 2rem;
   margin-bottom: 2rem;
 }
-
 .hero h1 {
   font-size: 3.5rem;
   font-weight: 800;
@@ -143,12 +205,10 @@ body {
   background-clip: text;
   color: transparent;
 }
-
 .glow-text {
   text-shadow: 0 0 20px var(--glow);
 }
 
-/* Typing animation & blinking cursor */
 .typed-container {
   min-height: 4rem;
   margin-bottom: 1rem;
@@ -157,13 +217,11 @@ body {
   align-items: center;
   gap: 2px;
 }
-
 .typed-text {
   font-size: 1.5rem;
   font-weight: 500;
   color: var(--accent);
 }
-
 .cursor {
   display: inline-block;
   width: 3px;
@@ -172,7 +230,6 @@ body {
   animation: blink 0.7s step-end infinite;
   margin-left: 2px;
 }
-
 @keyframes blink {
   from, to { opacity: 1; }
   50% { opacity: 0; }
@@ -185,13 +242,12 @@ body {
   color: var(--text-secondary);
 }
 
-/* Profile Picture */
+/* ---------- Profile Picture ---------- */
 .profile-wrapper {
   display: flex;
   justify-content: center;
   margin-bottom: 1.5rem;
 }
-
 .profile-img {
   width: 180px;
   height: 180px;
@@ -201,19 +257,17 @@ body {
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease;
 }
-
 .profile-img:hover {
   transform: scale(1.02);
 }
 
-/* Social Links with Icons */
+/* ---------- Social Links ---------- */
 .social-links {
   display: flex;
   justify-content: center;
   gap: 1.25rem;
   flex-wrap: wrap;
 }
-
 .social-links a {
   display: inline-flex;
   align-items: center;
@@ -227,18 +281,16 @@ body {
   transition: var(--transition);
   font-weight: 500;
 }
-
 .social-links a:hover {
   background: var(--accent);
   color: white;
   transform: translateY(-3px);
 }
-
 .social-links a:hover svg {
   color: white;
 }
 
-/* Cards */
+/* ---------- Cards ---------- */
 .card {
   background: var(--bg-secondary);
   border-radius: 28px;
@@ -248,12 +300,10 @@ body {
   transition: var(--transition);
   border: 1px solid var(--border);
 }
-
 .card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
 }
-
 .card h2 {
   font-size: 1.8rem;
   margin-bottom: 1.25rem;
@@ -270,7 +320,6 @@ body {
   gap: 1rem;
   margin-top: 1.5rem;
 }
-
 .info-grid p {
   background: var(--bg-primary);
   padding: 0.6rem 1rem;
@@ -279,13 +328,12 @@ body {
   border: 1px solid var(--border);
 }
 
-/* Skills */
+/* ---------- Skills ---------- */
 .skills-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 0.8rem;
 }
-
 .skill-tag {
   background: var(--skill-bg);
   color: var(--skill-text);
@@ -296,54 +344,47 @@ body {
   transition: var(--transition);
   border: 1px solid var(--border);
 }
-
 .skill-tag:hover {
   transform: scale(1.05);
 }
-
 .skill-tag:empty {
   display: none;
 }
 
-/* Education & Experience */
+/* ---------- Education & Experience ---------- */
 .edu-item,
 .exp-item {
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px dashed var(--border);
 }
-
 .edu-item h3,
 .exp-item h3 {
   font-size: 1.2rem;
   margin-bottom: 0.25rem;
 }
-
 .edu-item p,
 .exp-item p {
   color: var(--text-secondary);
   font-size: 0.95rem;
 }
-
 .edu-item small,
 .exp-item small {
   color: var(--accent);
   font-size: 0.8rem;
 }
-
 .exp-desc {
   margin-top: 0.5rem;
   font-size: 0.9rem;
 }
 
-/* Projects Grid */
+/* ---------- Projects Grid ---------- */
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 1.5rem;
   margin-top: 1rem;
 }
-
 .project-card {
   background: var(--bg-primary);
   border-radius: 20px;
@@ -354,14 +395,11 @@ body {
   flex-direction: column;
   overflow: hidden;
 }
-
 .project-card:hover {
   transform: translateY(-6px);
   border-color: var(--accent);
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
 }
-
-/* Project Images */
 .project-image {
   width: 100%;
   height: 200px;
@@ -371,17 +409,14 @@ body {
   border: 1px solid var(--border);
   transition: transform 0.3s ease;
 }
-
 .project-card:hover .project-image {
   transform: scale(1.02);
 }
-
 .project-card h3 {
   font-size: 1.3rem;
   margin-bottom: 0.5rem;
   color: var(--text-primary);
 }
-
 .project-card p {
   color: var(--text-secondary);
   font-size: 0.9rem;
@@ -389,14 +424,26 @@ body {
   line-height: 1.5;
 }
 
-.project-tech {
-  font-family: monospace;
-  font-size: 0.8rem;
-  color: var(--accent);
+/* Tech pills (replaces plain .project-tech string) */
+.project-tech-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin-bottom: 1rem;
 }
+.tech-pill {
+  background: var(--skill-bg);
+  color: var(--skill-text);
+  padding: 0.25rem 0.75rem;
+  border-radius: 40px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  font-family: monospace;
+  letter-spacing: 0.02em;
+}
 
-/* View Details Button */
+/* ---------- View Details Button ---------- */
 .details-btn {
   background: var(--accent);
   color: white;
@@ -414,19 +461,64 @@ body {
   margin-top: auto;
   align-self: flex-start;
 }
-
 .details-btn:hover {
   transform: translateY(-2px);
   background: #2563eb;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
-
-/* Remove old project link if present */
 .project-card a {
   display: none;
 }
 
-/* ---------- Modal (Professional Look) ---------- */
+/* ---------- Contact Form ---------- */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.contact-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.contact-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.contact-field label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.contact-field input,
+.contact-field textarea {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  font-family: inherit;
+  transition: var(--transition);
+  resize: vertical;
+  outline: none;
+}
+.contact-field input:focus,
+.contact-field textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--glow);
+}
+.contact-submit {
+  align-self: flex-start;
+  margin-top: 0.25rem;
+  font-size: 0.95rem;
+  padding: 0.65rem 1.5rem;
+}
+
+/* ---------- Modal ---------- */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -442,7 +534,6 @@ body {
   z-index: 1000;
   animation: fadeIn 0.2s forwards;
 }
-
 .modal-content {
   background: var(--bg-secondary);
   max-width: 1000px;
@@ -455,32 +546,19 @@ body {
   border: 1px solid var(--border);
   box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.4);
 }
-
-/* Custom scrollbar inside modal (inherits from global, but ensure consistency) */
-.modal-content::-webkit-scrollbar {
-  width: 8px;
-}
-
+.modal-content::-webkit-scrollbar { width: 6px; }
 .modal-content::-webkit-scrollbar-track {
   background: var(--scrollbar-track);
   border-radius: 10px;
+  margin-block: 4px;
 }
-
 .modal-content::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
   border-radius: 10px;
 }
-
 .modal-content::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
 }
-
-.dark .modal-content {
-  background: var(--bg-secondary);
-  border-color: var(--border);
-}
-
-/* Close button */
 .modal-close {
   position: absolute;
   top: 1.2rem;
@@ -497,14 +575,11 @@ body {
   transition: var(--transition);
   color: var(--text-primary);
 }
-
 .modal-close:hover {
   background: var(--accent);
   color: white;
   transform: rotate(90deg);
 }
-
-/* Modal title */
 .modal-content h2 {
   font-size: 2rem;
   margin-bottom: 1rem;
@@ -513,7 +588,7 @@ body {
   padding-right: 2rem;
 }
 
-/* Image gallery – flexible, larger images */
+/* Modal image gallery */
 .modal-images {
   display: flex;
   flex-wrap: wrap;
@@ -521,7 +596,6 @@ body {
   margin: 1.8rem 0;
   justify-content: center;
 }
-
 .modal-images img {
   width: calc(50% - 0.75rem);
   min-width: 200px;
@@ -533,19 +607,13 @@ body {
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
 }
-
-.modal-images img:hover {
-  transform: scale(1.02);
-}
-
-/* Phone app screenshots – single column, larger */
+.modal-images img:hover { transform: scale(1.02); }
 .modal-images-phone {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
 }
-
 .modal-images-phone img {
   width: auto;
   max-width: 380px;
@@ -556,16 +624,13 @@ body {
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
-
-/* Modal text */
 .modal-desc {
   margin: 1.2rem 0;
   line-height: 1.7;
   font-size: 1rem;
   color: var(--text-primary);
-  white-space: pre-wrap;  /* Preserve line breaks from "How to use" steps */
+  white-space: pre-wrap;
 }
-
 .modal-tech {
   font-family: monospace;
   font-size: 0.9rem;
@@ -576,31 +641,20 @@ body {
   color: var(--accent);
   margin: 0.5rem 0;
 }
-
-/* Features list */
 .modal-features {
   margin: 1.2rem 0 0 1.5rem;
   color: var(--text-secondary);
 }
-
 .modal-features li {
   margin-bottom: 0.5rem;
   line-height: 1.5;
 }
-
-/* Fade-in animation */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
-/* ---------- Lightbox (click to expand) ---------- */
+/* ---------- Lightbox ---------- */
 .lightbox-overlay {
   position: fixed;
   top: 0;
@@ -614,7 +668,6 @@ body {
   z-index: 2000;
   cursor: pointer;
 }
-
 .lightbox-close {
   position: absolute;
   top: 20px;
@@ -626,11 +679,7 @@ body {
   transition: transform 0.2s;
   z-index: 2001;
 }
-
-.lightbox-close:hover {
-  transform: scale(1.1);
-}
-
+.lightbox-close:hover { transform: scale(1.1); }
 .lightbox-image {
   max-width: 90vw;
   max-height: 90vh;
@@ -640,7 +689,7 @@ body {
   cursor: default;
 }
 
-/* Footer */
+/* ---------- Footer ---------- */
 .footer {
   text-align: center;
   margin-top: 2rem;
@@ -650,68 +699,29 @@ body {
   font-size: 0.85rem;
 }
 
-/* Responsive */
+/* ---------- Responsive ---------- */
 @media (max-width: 768px) {
-  .container {
-    padding: 1rem;
-  }
-  .hero h1 {
-    font-size: 2.5rem;
-  }
-  .typed-text {
-    font-size: 1.2rem;
-  }
-  .cursor {
-    height: 1.2rem;
-  }
-  .hero-bio {
-    font-size: 1rem;
-  }
-  .card h2 {
-    font-size: 1.5rem;
-  }
-  .profile-img {
-    width: 140px;
-    height: 140px;
-  }
-  .project-image {
-    height: 160px;
-  }
-  .modal-content {
-    max-width: 95%;
-    padding: 1.5rem;
-  }
-  .modal-content h2 {
-    font-size: 1.5rem;
-  }
-  .modal-images img {
-    width: 100%;
-    max-height: 240px;
-  }
-  .modal-images-phone img {
-    max-width: 100%;
-    max-height: 50vh;
-  }
+  .container { padding: 1rem; }
+  .hero h1 { font-size: 2.5rem; }
+  .typed-text { font-size: 1.2rem; }
+  .cursor { height: 1.2rem; }
+  .hero-bio { font-size: 1rem; }
+  .card h2 { font-size: 1.5rem; }
+  .profile-img { width: 140px; height: 140px; }
+  .project-image { height: 160px; }
+  .modal-content { max-width: 95%; padding: 1.5rem; }
+  .modal-content h2 { font-size: 1.5rem; }
+  .modal-images img { width: 100%; max-height: 240px; }
+  .modal-images-phone img { max-width: 100%; max-height: 50vh; }
+  .contact-row { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {
-  .hero h1 {
-    font-size: 2rem;
-  }
-  .social-links {
-    gap: 0.8rem;
-  }
-  .social-links a {
-    padding: 0.4rem 1rem;
-    font-size: 0.8rem;
-  }
-  .profile-img {
-    width: 120px;
-    height: 120px;
-  }
+  .hero h1 { font-size: 2rem; }
+  .social-links { gap: 0.8rem; }
+  .social-links a { padding: 0.4rem 1rem; font-size: 0.8rem; }
+  .profile-img { width: 120px; height: 120px; }
 }
 
-/* ---------- ADDED: Smooth Scroll ---------- */
-html {
-  scroll-behavior: smooth;
-}
+/* ---------- Smooth Scroll ---------- */
+html { scroll-behavior: smooth; }

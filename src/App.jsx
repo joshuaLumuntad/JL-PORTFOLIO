@@ -1,16 +1,15 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import Particles from "react-tsparticles";
 import { loadSlim } from "tsparticles-slim";
 import {
   FiGithub, FiLinkedin, FiMail, FiBriefcase,
-  FiBookOpen, FiTool, FiAward, FiSun, FiMoon, FiX
+  FiBookOpen, FiTool, FiAward, FiSun, FiMoon, FiX,
+  FiSend, FiArrowUp, FiMessageSquare
 } from "react-icons/fi";
 import "./App.css";
 
-// Profile image
 import profileImg from "./assets/profile1.jpg";
 
-// Project screenshots
 import neupcThumb from "./assets/neupc-thumb.jpg?url";
 import neupcImg1 from "./assets/neupc-1.jpg?url";
 import neupcImg2 from "./assets/neupc-2.jpg?url";
@@ -26,7 +25,7 @@ import osdCamImg2 from "./assets/osd-cam-2.jpg?url";
 const DEFAULT_IMG = "https://placehold.co/600x400/png?text=Image+Not+Found";
 const getImage = (img) => (img && typeof img === "string" ? img : DEFAULT_IMG);
 
-// Typing hook
+/* ── Typing hook ─────────────────────────────────────────── */
 const useTyped = (strings, typeSpeed = 50, backSpeed = 30, delay = 1500) => {
   const [displayText, setDisplayText] = useState("");
   const [index, setIndex] = useState(0);
@@ -59,6 +58,172 @@ const useTyped = (strings, typeSpeed = 50, backSpeed = 30, delay = 1500) => {
   return displayText;
 };
 
+/* ── Section entrance animation hook ─────────────────────── */
+const useFadeIn = () => {
+  const ref = useRef(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add("visible");
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.12 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  return ref;
+};
+
+/* ── Animated section wrapper ─────────────────────────────── */
+const FadeCard = ({ children, className = "" }) => {
+  const ref = useFadeIn();
+  return (
+    <div ref={ref} className={`fade-section card ${className}`}>
+      {children}
+    </div>
+  );
+};
+
+/* ── Nav dots ─────────────────────────────────────────────── */
+const NAV_SECTIONS = [
+  { id: "about", label: "About" },
+  { id: "skills", label: "Skills" },
+  { id: "education", label: "Education" },
+  { id: "experience", label: "Experience" },
+  { id: "projects", label: "Projects" },
+  { id: "contact", label: "Contact" },
+];
+
+const NavDots = () => {
+  const [active, setActive] = useState("about");
+
+  useEffect(() => {
+    const observers = NAV_SECTIONS.map(({ id }) => {
+      const el = document.getElementById(id);
+      if (!el) return null;
+      const obs = new IntersectionObserver(
+        ([entry]) => { if (entry.isIntersecting) setActive(id); },
+        { rootMargin: "-40% 0px -50% 0px" }
+      );
+      obs.observe(el);
+      return obs;
+    });
+    return () => observers.forEach((o) => o && o.disconnect());
+  }, []);
+
+  const scrollTo = (id) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  return (
+    <nav className="nav-dots" aria-label="Section navigation">
+      {NAV_SECTIONS.map(({ id, label }) => (
+        <button
+          key={id}
+          className={`nav-dot ${active === id ? "active" : ""}`}
+          onClick={() => scrollTo(id)}
+          title={label}
+          aria-label={`Go to ${label}`}
+        />
+      ))}
+    </nav>
+  );
+};
+
+/* ── Scroll-to-top button ─────────────────────────────────── */
+const ScrollToTop = () => {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 300);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  if (!visible) return null;
+  return (
+    <button
+      className="scroll-top"
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      aria-label="Scroll to top"
+    >
+      <FiArrowUp size={20} />
+    </button>
+  );
+};
+
+/* ── Contact form ─────────────────────────────────────────── */
+const ContactForm = ({ email }) => {
+  const [form, setForm] = useState({ name: "", from: "", message: "" });
+  const [sent, setSent] = useState(false);
+
+  const handleChange = (e) =>
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const subject = encodeURIComponent(`Portfolio message from ${form.name}`);
+    const body = encodeURIComponent(
+      `From: ${form.name} <${form.from}>\n\n${form.message}`
+    );
+    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+    setSent(true);
+    setTimeout(() => setSent(false), 4000);
+  };
+
+  return (
+    <form className="contact-form" onSubmit={handleSubmit}>
+      <div className="contact-row">
+        <div className="contact-field">
+          <label htmlFor="name">Name</label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            required
+            placeholder="Your name"
+            value={form.name}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="contact-field">
+          <label htmlFor="from">Email</label>
+          <input
+            id="from"
+            name="from"
+            type="email"
+            required
+            placeholder="your@email.com"
+            value={form.from}
+            onChange={handleChange}
+          />
+        </div>
+      </div>
+      <div className="contact-field">
+        <label htmlFor="message">Message</label>
+        <textarea
+          id="message"
+          name="message"
+          rows={5}
+          required
+          placeholder="What's on your mind?"
+          value={form.message}
+          onChange={handleChange}
+        />
+      </div>
+      <button type="submit" className="details-btn contact-submit">
+        {sent ? "✅ Opening mail client…" : <><FiSend size={16} /> Send Message</>}
+      </button>
+    </form>
+  );
+};
+
+/* ══════════════════════════════════════════════════════════ */
 function App() {
   const [darkMode, setDarkMode] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -70,22 +235,20 @@ function App() {
   const openLightbox = (img) => setLightboxImage(img);
   const closeLightbox = () => setLightboxImage(null);
 
-  // Lock body scroll when modal or lightbox is open
   useEffect(() => {
     if (selectedProject || lightboxImage) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
+    return () => { document.body.style.overflow = "unset"; };
   }, [selectedProject, lightboxImage]);
 
   const particlesInit = useCallback(async (engine) => {
     await loadSlim(engine);
   }, []);
 
+  /* ── Data ───────────────────────────────────────────────── */
   const personalInfo = {
     name: "Joshua Lumuntad",
     role: "IT Student & Aspiring Full‑Stack Developer",
@@ -99,13 +262,8 @@ function App() {
   };
 
   const skills = [
-    "JavaScript (ES6+)",
-    "React",
-    "Node.js",
-    "Python",
-    "MongoDB",
-    "Git/GitHub",
-    "HTML5/CSS3",
+    "JavaScript (ES6+)", "React", "Node.js", "Python",
+    "MongoDB", "Git/GitHub", "HTML5/CSS3",
     "CSS Frameworks (Bootstrap, Tailwind)",
   ];
 
@@ -114,47 +272,50 @@ function App() {
       id: 1,
       title: "NEU PC Simulator",
       shortDesc: "Interactive PC building and hardware simulation.",
-      fullDesc: "A web‑based simulator that lets users assemble virtual PC components, check compatibility, and estimate performance. Built with React for the website, Godot for the 3D simulation engine, and deployed on Netlify.\n\n📖 **How to use:**\n1. Browse available components (CPU, GPU, RAM, storage, etc.) from the library.\n2. Drag and drop components into the build area.\n3. The system will automatically check compatibility (socket, power, size).\n4. View real‑time performance score and estimated wattage.\n5. Save your build with a name and load it later.\n6. Share your build using a generated link.",
-      tech: "React, Godot, Netlify",
+      fullDesc:
+        "A web‑based simulator that lets users assemble virtual PC components, check compatibility, and estimate performance. Built with React for the website, Godot for the 3D simulation engine, and deployed on Netlify.\n\n📖 How to use:\n1. Browse available components (CPU, GPU, RAM, storage, etc.) from the library.\n2. Drag and drop components into the build area.\n3. The system will automatically check compatibility (socket, power, size).\n4. View real‑time performance score and estimated wattage.\n5. Save your build with a name and load it later.\n6. Share your build using a generated link.",
+      tech: ["React", "Godot", "Netlify"],
       thumbnail: getImage(neupcThumb),
       images: [getImage(neupcImg1), getImage(neupcImg2)],
       features: [
         "Real‑time compatibility check",
         "3D component preview",
         "Save and load custom builds",
-        "Performance score estimation"
-      ]
+        "Performance score estimation",
+      ],
     },
     {
       id: 2,
       title: "NEU OSD Portal",
       shortDesc: "Student discipline management system – admin dashboard and reporting.",
-      fullDesc: "A full‑stack portal for the Office of Student Development (OSD) to manage student violations, track incidents, generate reports, and handle student records. Frontend built with vanilla React framework, backend in PHP, hosted on Render.\n\n📖 **How to use:**\n1. Log in with your role (admin, faculty, or student).\n2. Admins: add/edit/delete student records, define violation types, and view all reports.\n3. Faculty: submit a violation by selecting a student, choosing the violation type, and adding notes/evidence.\n4. Students: view their own violation history and status.\n5. Generate PDF reports filtered by date, student, or violation type.\n6. Use the dashboard to see statistics (most common violations, trends).",
-      tech: "React (vanilla), PHP, Render",
+      fullDesc:
+        "A full‑stack portal for the Office of Student Development (OSD) to manage student violations, track incidents, generate reports, and handle student records. Frontend built with vanilla React framework, backend in PHP, hosted on Render.\n\n📖 How to use:\n1. Log in with your role (admin, faculty, or student).\n2. Admins: add/edit/delete student records, define violation types, and view all reports.\n3. Faculty: submit a violation by selecting a student, choosing the violation type, and adding notes/evidence.\n4. Students: view their own violation history and status.\n5. Generate PDF reports filtered by date, student, or violation type.\n6. Use the dashboard to see statistics (most common violations, trends).",
+      tech: ["React", "PHP", "Render"],
       thumbnail: getImage(osdPortalThumb),
       images: [getImage(osdPortalImg1), getImage(osdPortalImg2)],
       features: [
         "Role‑based access (admin, faculty, student)",
         "Violation reporting and tracking",
         "Automated incident reports",
-        "Student record management"
-      ]
+        "Student record management",
+      ],
     },
     {
       id: 3,
       title: "OSD Violation Cam",
       shortDesc: "Live camera module for capturing violation evidence (mobile).",
-      fullDesc: "A React Native mobile application that integrates with the OSD Portal. Uses device camera to capture violation evidence, stores data on a PHP backend, and is prepared for deployment via Workwhole (or similar platform).\n\n📖 **How to use:**\n1. Install the app on your Android/iOS device.\n2. Log in using your OSD Portal credentials (faculty or admin role).\n3. Point the camera at the violation scene and tap the capture button.\n4. Add optional notes and select the involved student from a list.\n5. The photo and metadata are uploaded to the backend and linked to the student's record.\n6. Works offline – captures are saved locally and synced when internet is restored.\n7. View all past captures and their status in the history tab.",
-      tech: "React Native, PHP, Workwhole",
+      fullDesc:
+        "A React Native mobile application that integrates with the OSD Portal. Uses device camera to capture violation evidence, stores data on a PHP backend, and is prepared for deployment via Workwhole (or similar platform).\n\n📖 How to use:\n1. Install the app on your Android/iOS device.\n2. Log in using your OSD Portal credentials (faculty or admin role).\n3. Point the camera at the violation scene and tap the capture button.\n4. Add optional notes and select the involved student from a list.\n5. The photo and metadata are uploaded to the backend and linked to the student's record.\n6. Works offline – captures are saved locally and synced when internet is restored.\n7. View all past captures and their status in the history tab.",
+      tech: ["React Native", "PHP", "Workwhole"],
       thumbnail: getImage(osdCamThumb),
       images: [getImage(osdCamImg1), getImage(osdCamImg2)],
       features: [
         "Real‑time photo capture",
         "Evidence linked to student records",
         "Offline support (local storage)",
-        "Secure upload to backend"
-      ]
-    }
+        "Secure upload to backend",
+      ],
+    },
   ];
 
   const education = [
@@ -170,7 +331,8 @@ function App() {
       title: "Tech Support Intern",
       company: "Department of Environment",
       period: "December 2025 - February 2026",
-      description: "Provided technical support for internal systems, assisted with software updates, and collaborated on IT projects to improve department efficiency.",
+      description:
+        "Provided technical support for internal systems, assisted with software updates, and collaborated on IT projects to improve department efficiency.",
     },
   ];
 
@@ -182,6 +344,7 @@ function App() {
   ];
   const typedText = useTyped(typedStrings, 60, 30, 1500);
 
+  /* ── Render ─────────────────────────────────────────────── */
   return (
     <div className={`app ${darkMode ? "dark" : "light"}`}>
       <Particles
@@ -208,11 +371,16 @@ function App() {
         }}
       />
 
-      <button className="theme-toggle" onClick={toggleTheme}>
+      {/* Fixed controls */}
+      <button className="theme-toggle" onClick={toggleTheme} aria-label="Toggle theme">
         {darkMode ? <FiSun size={24} /> : <FiMoon size={24} />}
       </button>
+      <NavDots />
+      <ScrollToTop />
 
       <main className="container">
+
+        {/* ── Hero ───────────────────────────────────────── */}
         <section className="hero">
           <div className="profile-wrapper">
             <img src={profileImg} alt={personalInfo.name} className="profile-img" />
@@ -224,94 +392,147 @@ function App() {
           </div>
           <p className="hero-bio">{personalInfo.bio}</p>
           <div className="social-links">
-            <a href={personalInfo.github} target="_blank" rel="noopener noreferrer"><FiGithub size={20} /> GitHub</a>
-            <a href={personalInfo.linkedin} target="_blank" rel="noopener noreferrer"><FiLinkedin size={20} /> LinkedIn</a>
-            <a href={`mailto:${personalInfo.email}`}><FiMail size={20} /> Email</a>
+            <a href={personalInfo.github} target="_blank" rel="noopener noreferrer">
+              <FiGithub size={20} /> GitHub
+            </a>
+            <a href={personalInfo.linkedin} target="_blank" rel="noopener noreferrer">
+              <FiLinkedin size={20} /> LinkedIn
+            </a>
+            <a href={`mailto:${personalInfo.email}`}>
+              <FiMail size={20} /> Email
+            </a>
           </div>
         </section>
 
-        <section className="card">
-          <h2><FiBookOpen /> About Me</h2>
-          <p>{personalInfo.bio}</p>
-          <div className="info-grid">
-            <p>📍 {personalInfo.location}</p>
-            <p>🎓 {personalInfo.university}</p>
-            <p>📅 Graduating: {personalInfo.graduation}</p>
-            <p>💼 Open for internships</p>
-          </div>
-        </section>
-
-        <section className="card">
-          <h2><FiTool /> Tech Skills</h2>
-          <div className="skills-grid">
-            {skills.map((skill) => (<span key={skill} className="skill-tag">{skill}</span>))}
-          </div>
-        </section>
-
-        <section className="card">
-          <h2><FiBookOpen /> Education</h2>
-          {education.map((edu, idx) => (
-            <div key={idx} className="edu-item">
-              <h3>{edu.degree}</h3>
-              <p>{edu.institution}</p>
-              <small>{edu.year}</small>
+        {/* ── About ──────────────────────────────────────── */}
+        <FadeCard>
+          <div id="about">
+            <h2><FiBookOpen /> About Me</h2>
+            <p>{personalInfo.bio}</p>
+            <div className="info-grid">
+              <p>📍 {personalInfo.location}</p>
+              <p>🎓 {personalInfo.university}</p>
+              <p>📅 Graduating: {personalInfo.graduation}</p>
+              <p>💼 Open for internships</p>
             </div>
-          ))}
-        </section>
+          </div>
+        </FadeCard>
 
-        <section className="card">
-          <h2><FiBriefcase /> Experience</h2>
-          {experience.map((exp, idx) => (
-            <div key={idx} className="exp-item">
-              <h3>{exp.title}</h3>
-              <p>{exp.company}</p>
-              <small>{exp.period}</small>
-              <p className="exp-desc">{exp.description}</p>
+        {/* ── Skills ─────────────────────────────────────── */}
+        <FadeCard>
+          <div id="skills">
+            <h2><FiTool /> Tech Skills</h2>
+            <div className="skills-grid">
+              {skills.map((skill) => (
+                <span key={skill} className="skill-tag">{skill}</span>
+              ))}
             </div>
-          ))}
-        </section>
+          </div>
+        </FadeCard>
 
-        <section className="card">
-          <h2><FiAward /> Projects</h2>
-          <div className="projects-grid">
-            {projects.map((project) => (
-              <div key={project.id} className="project-card">
-                <img src={project.thumbnail} alt={project.title} className="project-image" />
-                <h3>{project.title}</h3>
-                <p>{project.shortDesc}</p>
-                <p className="project-tech">🔧 {project.tech}</p>
-                <button onClick={() => openModal(project)} className="details-btn">
-                  📖 View Details
-                </button>
+        {/* ── Education ──────────────────────────────────── */}
+        <FadeCard>
+          <div id="education">
+            <h2><FiBookOpen /> Education</h2>
+            {education.map((edu, idx) => (
+              <div key={idx} className="edu-item">
+                <h3>{edu.degree}</h3>
+                <p>{edu.institution}</p>
+                <small>{edu.year}</small>
               </div>
             ))}
           </div>
-        </section>
+        </FadeCard>
+
+        {/* ── Experience ─────────────────────────────────── */}
+        <FadeCard>
+          <div id="experience">
+            <h2><FiBriefcase /> Experience</h2>
+            {experience.map((exp, idx) => (
+              <div key={idx} className="exp-item">
+                <h3>{exp.title}</h3>
+                <p>{exp.company}</p>
+                <small>{exp.period}</small>
+                <p className="exp-desc">{exp.description}</p>
+              </div>
+            ))}
+          </div>
+        </FadeCard>
+
+        {/* ── Projects ───────────────────────────────────── */}
+        <FadeCard>
+          <div id="projects">
+            <h2><FiAward /> Projects</h2>
+            <div className="projects-grid">
+              {projects.map((project) => (
+                <div key={project.id} className="project-card">
+                  <img
+                    src={project.thumbnail}
+                    alt={project.title}
+                    className="project-image"
+                  />
+                  <h3>{project.title}</h3>
+                  <p>{project.shortDesc}</p>
+                  {/* Tech pills */}
+                  <div className="project-tech-pills">
+                    {project.tech.map((t) => (
+                      <span key={t} className="tech-pill">{t}</span>
+                    ))}
+                  </div>
+                  <button onClick={() => openModal(project)} className="details-btn">
+                    📖 View Details
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </FadeCard>
+
+        {/* ── Contact ────────────────────────────────────── */}
+        <FadeCard>
+          <div id="contact">
+            <h2><FiMessageSquare /> Get In Touch</h2>
+            <p style={{ color: "var(--text-secondary)", marginBottom: "1.5rem" }}>
+              Have a project idea, opportunity, or just want to say hi? Fill out the form below
+              and it'll open your mail client with everything pre-filled.
+            </p>
+            <ContactForm email={personalInfo.email} />
+          </div>
+        </FadeCard>
 
         <footer className="footer">
-          <p>© 2025 {personalInfo.name} – Built with React + Vite + Particles</p>
+          <p>© {new Date().getFullYear()} {personalInfo.name} – Built with React + Vite + Particles</p>
         </footer>
       </main>
 
-      {/* Modal for project details */}
+      {/* ── Project modal ──────────────────────────────────── */}
       {selectedProject && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <button className="modal-close" onClick={closeModal}><FiX size={24} /></button>
             <h2>{selectedProject.title}</h2>
+
+            {/* Tech pills inside modal */}
+            <div className="project-tech-pills" style={{ marginBottom: "1rem" }}>
+              {selectedProject.tech.map((t) => (
+                <span key={t} className="tech-pill">{t}</span>
+              ))}
+            </div>
+
             <div className={`modal-images ${selectedProject.id === 3 ? "modal-images-phone" : ""}`}>
               {selectedProject.images.map((img, idx) => (
                 <img
                   key={idx}
                   src={img}
-                  alt={`${selectedProject.title} screenshot ${idx+1}`}
+                  alt={`${selectedProject.title} screenshot ${idx + 1}`}
                   onClick={() => openLightbox(img)}
                   style={{ cursor: "pointer" }}
                 />
               ))}
             </div>
+
             <p className="modal-desc">{selectedProject.fullDesc}</p>
-            <p className="modal-tech">🔧 {selectedProject.tech}</p>
+
             {selectedProject.features && selectedProject.features.length > 0 && (
               <>
                 <h4>Key Features:</h4>
@@ -326,10 +547,12 @@ function App() {
         </div>
       )}
 
-      {/* Lightbox for expanded image */}
+      {/* ── Lightbox ───────────────────────────────────────── */}
       {lightboxImage && (
         <div className="lightbox-overlay" onClick={closeLightbox}>
-          <button className="lightbox-close" onClick={closeLightbox}><FiX size={32} /></button>
+          <button className="lightbox-close" onClick={closeLightbox}>
+            <FiX size={32} />
+          </button>
           <img src={lightboxImage} alt="Expanded view" className="lightbox-image" />
         </div>
       )}
