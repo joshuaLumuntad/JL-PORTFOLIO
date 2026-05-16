@@ -710,3 +710,8 @@ body {
     height: 120px;
   }
 }
+
+/* ---------- ADDED: Smooth Scroll ---------- */
+html {
+  scroll-behavior: smooth;
+}

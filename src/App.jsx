@@ -70,6 +70,18 @@ function App() {
   const openLightbox = (img) => setLightboxImage(img);
   const closeLightbox = () => setLightboxImage(null);
 
+  // Lock body scroll when modal or lightbox is open
+  useEffect(() => {
+    if (selectedProject || lightboxImage) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selectedProject, lightboxImage]);
+
   const particlesInit = useCallback(async (engine) => {
     await loadSlim(engine);
   }, []);
